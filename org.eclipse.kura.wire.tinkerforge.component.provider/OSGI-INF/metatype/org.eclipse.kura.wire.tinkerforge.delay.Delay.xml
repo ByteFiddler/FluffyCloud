@@ -9,7 +9,7 @@
      
 -->
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="en_us">
-    <OCD id="org.eclipse.kura.wire.devel.delay.Delay" 
+    <OCD id="org.eclipse.kura.wire.tinkerforge.delay.Delay" 
          name="Delay" 
          description="A wire component that introduces a configurable delay">
 
@@ -33,7 +33,7 @@
         
     </OCD>
     
-    <Designate pid="org.eclipse.kura.wire.devel.delay.Delay" factoryPid="org.eclipse.kura.wire.devel.delay.Delay">
-        <Object ocdref="org.eclipse.kura.wire.devel.delay.Delay"/>
+    <Designate pid="org.eclipse.kura.wire.tinkerforge.delay.Delay" factoryPid="org.eclipse.kura.wire.tinkerforge.delay.Delay">
+        <Object ocdref="org.eclipse.kura.wire.tinkerforge.delay.Delay"/>
     </Designate>
 </MetaData>

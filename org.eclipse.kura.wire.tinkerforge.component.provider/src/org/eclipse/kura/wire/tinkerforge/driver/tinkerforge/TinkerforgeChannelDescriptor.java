@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,16 +16,16 @@ import java.util.Map;
 import org.eclipse.kura.core.configuration.metatype.Tad;
 import org.eclipse.kura.core.configuration.metatype.Tscalar;
 import org.eclipse.kura.driver.ChannelDescriptor;
-import org.eclipse.kura.wire.devel.Property;
+import org.eclipse.kura.wire.tinkerforge.Property;
 
-public final class DummyChannelDescriptor implements ChannelDescriptor {
+public final class TinkerforgeChannelDescriptor implements ChannelDescriptor {
 
     private static final Property<String> VALUE = new Property<>("value", "0");
-    private static final DummyChannelDescriptor INSTANCE = new DummyChannelDescriptor();
+    private static final TinkerforgeChannelDescriptor INSTANCE = new TinkerforgeChannelDescriptor();
 
     private final List<Tad> ads;
 
-    private DummyChannelDescriptor() {
+    private TinkerforgeChannelDescriptor() {
         this.ads = initAttributes();
     }
 
@@ -41,7 +41,7 @@ public final class DummyChannelDescriptor implements ChannelDescriptor {
         return Collections.singletonList(value);
     }
 
-    public static DummyChannelDescriptor instance() {
+    public static TinkerforgeChannelDescriptor instance() {
         return INSTANCE;
     }
 

@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +28,7 @@ public class ConnectionManager {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private Future<?> connectionAttempt = CompletableFuture.completedFuture(null);
-    private DummyDriverOptions options;
+    private TinkerforgeDriverOptions options;
 
     public Future<?> connectAsync() {
         synchronized (this) {
@@ -139,7 +139,7 @@ public class ConnectionManager {
         return !this.connectionAttempt.isDone();
     }
 
-    public void setOptions(final DummyDriverOptions options) {
+    public void setOptions(final TinkerforgeDriverOptions options) {
         this.options = options;
     }
 

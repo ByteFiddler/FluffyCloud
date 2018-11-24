@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel;
+package org.eclipse.kura.wire.tinkerforge;
 
 import java.util.Map;
 

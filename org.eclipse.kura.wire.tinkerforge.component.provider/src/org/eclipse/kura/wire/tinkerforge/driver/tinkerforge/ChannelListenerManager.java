@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.eclipse.kura.channel.ChannelRecord;
 import org.eclipse.kura.channel.listener.ChannelEvent;
 import org.eclipse.kura.channel.listener.ChannelListener;
 import org.eclipse.kura.type.TypedValue;
-import org.eclipse.kura.wire.devel.driver.dummy.DummyDriver.BaseRequest;
+import org.eclipse.kura.wire.tinkerforge.driver.tinkerforge.TinkerforgeDriver.BaseRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +30,9 @@ public class ChannelListenerManager {
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChannelListenerRegistration> registeredListeners = new CopyOnWriteArraySet<>();
-    private final DummyDriver driver;
+    private final TinkerforgeDriver driver;
 
-    public ChannelListenerManager(final DummyDriver driver) {
+    public ChannelListenerManager(final TinkerforgeDriver driver) {
         this.driver = driver;
     }
 
@@ -72,7 +72,7 @@ public class ChannelListenerManager {
 
                 final ChannelRecord record = ChannelRecord.createReadRecord(reg.request.channelName, value.getType());
                 record.setValue(value);
-                record.setChannelStatus(DummyDriver.SUCCESS);
+                record.setChannelStatus(TinkerforgeDriver.SUCCESS);
                 record.setTimestamp(System.currentTimeMillis());
 
                 reg.listener.onChannelEvent(new ChannelEvent(record));

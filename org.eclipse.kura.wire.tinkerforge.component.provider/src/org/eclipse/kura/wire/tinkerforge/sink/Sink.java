@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.sink;
+package org.eclipse.kura.wire.tinkerforge.sink;
 
 import static java.util.Objects.isNull;
 

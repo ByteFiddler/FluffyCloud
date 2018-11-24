@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.delay;
+package org.eclipse.kura.wire.tinkerforge.delay;
 
 import java.util.Map;
 import java.util.Random;

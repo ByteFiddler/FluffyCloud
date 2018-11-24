@@ -7,13 +7,13 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
 import java.util.Map;
 
-import org.eclipse.kura.wire.devel.Property;
+import org.eclipse.kura.wire.tinkerforge.Property;
 
-public class DummyDriverOptions {
+public class TinkerforgeDriverOptions {
 
     private static final Property<Integer> CONNECTION_DELAY = new Property<>("connection.delay", 0);
     private static final Property<String> CHANNEL_DESCRIPTOR_ISSUES = new Property<>("channel.descriptor.issues",
@@ -25,7 +25,7 @@ public class DummyDriverOptions {
 
     private final Map<String, Object> properties;
 
-    public DummyDriverOptions(final Map<String, Object> properties) {
+    public TinkerforgeDriverOptions(final Map<String, Object> properties) {
         this.properties = properties;
     }
 

@@ -9,14 +9,14 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
-    name="org.eclipse.kura.wire.devel.delay.Delay"
+    name="org.eclipse.kura.wire.tinkerforge.delay.Delay"
     activate="activate"
     deactivate="deactivate"
     modified="updated"
     enabled="true"
     immediate="true"
     configuration-policy="require">
-   <implementation class="org.eclipse.kura.wire.devel.delay.Delay"/>
+   <implementation class="org.eclipse.kura.wire.tinkerforge.delay.Delay"/>
    <service>
       <provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
       <provide interface="org.eclipse.kura.wire.WireComponent"/>
@@ -25,7 +25,7 @@
       <provide interface="org.osgi.service.wireadmin.Producer"/>
       <provide interface="org.osgi.service.wireadmin.Consumer"/>
    </service>
-   <property name="service.pid" value="org.eclipse.kura.wire.devel.delay.Delay"/>
+   <property name="service.pid" value="org.eclipse.kura.wire.tinkerforge.delay.Delay"/>
    <reference bind="bindWireHelperService"
    	          cardinality="1..1"
    	          interface="org.eclipse.kura.wire.WireHelperService"

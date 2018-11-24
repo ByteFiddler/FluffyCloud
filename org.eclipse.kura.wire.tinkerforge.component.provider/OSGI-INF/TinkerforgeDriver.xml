@@ -9,14 +9,14 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" 
-               name="org.eclipse.kura.wire.devel.driver.dummy"
+               name="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge"
                activate="activate" 
                deactivate="deactivate" 
                modified="updated"
                enabled="true" 
                configuration-policy="require"> 
-   <implementation class="org.eclipse.kura.wire.devel.driver.dummy.DummyDriver"/>
-   <property name="service.pid" value="org.eclipse.kura.wire.devel.driver.dummy"/>
+   <implementation class="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge.TinkerforgeDriver"/>
+   <property name="service.pid" value="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge"/>
    <service>
       <provide interface="org.eclipse.kura.driver.Driver"/>
       <provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>

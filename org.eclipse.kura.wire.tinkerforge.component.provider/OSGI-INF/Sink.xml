@@ -9,21 +9,21 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
-    	name="org.eclipse.kura.wire.devel.sink.Sink"
+    	name="org.eclipse.kura.wire.tinkerforge.sink.Sink"
     	activate="activate"
     	deactivate="deactivate"
     	modified="updated"
     	enabled="true"
       immediate="true"
     	configuration-policy="require">
-   <implementation class="org.eclipse.kura.wire.devel.sink.Sink"/>
+   <implementation class="org.eclipse.kura.wire.tinkerforge.sink.Sink"/>
    <service>
       <provide interface="org.eclipse.kura.wire.WireComponent"/>
       <provide interface="org.eclipse.kura.wire.WireReceiver"/>
       <provide interface="org.osgi.service.wireadmin.Consumer"/>
       <provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
    </service>
-   <property name="service.pid" value="org.eclipse.kura.wire.devel.sink.Sink"/>
+   <property name="service.pid" value="org.eclipse.kura.wire.tinkerforge.sink.Sink"/>
    <reference bind="bindWireHelperService"
    	          cardinality="1..1"
    	          interface="org.eclipse.kura.wire.WireHelperService"

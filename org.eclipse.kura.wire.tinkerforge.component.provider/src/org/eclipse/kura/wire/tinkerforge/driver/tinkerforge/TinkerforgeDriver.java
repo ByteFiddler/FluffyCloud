@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.kura.channel.ChannelFlag.FAILURE;
@@ -28,21 +28,21 @@ import org.eclipse.kura.driver.Driver;
 import org.eclipse.kura.driver.PreparedRead;
 import org.eclipse.kura.type.DataType;
 import org.eclipse.kura.type.TypedValue;
-import org.eclipse.kura.wire.devel.DataTypeHelper;
+import org.eclipse.kura.wire.tinkerforge.DataTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DummyDriver implements Driver, ConfigurableComponent {
+public class TinkerforgeDriver implements Driver, ConfigurableComponent {
 
     static final ChannelStatus SUCCESS = new ChannelStatus(ChannelFlag.SUCCESS);
 
-    private static final Logger logger = LoggerFactory.getLogger(DummyDriver.class);
+    private static final Logger logger = LoggerFactory.getLogger(TinkerforgeDriver.class);
 
     private final Map<String, TypedValue<?>> values = new HashMap<>();
     private final ChannelListenerManager channelListenerManager = new ChannelListenerManager(this);
     private final ConnectionManager connectionManager = new ConnectionManager();
 
-    private DummyDriverOptions options;
+    private TinkerforgeDriverOptions options;
 
     public void activate(Map<String, Object> properties) {
         logger.info("activating...");
@@ -66,7 +66,7 @@ public class DummyDriver implements Driver, ConfigurableComponent {
         logger.info("updating..");
 
         values.clear();
-        this.options = new DummyDriverOptions(properties);
+        this.options = new TinkerforgeDriverOptions(properties);
 
         this.connectionManager.setOptions(options);
 
@@ -92,7 +92,7 @@ public class DummyDriver implements Driver, ConfigurableComponent {
         final ChannelDescriptorIssue issue = this.options.getChannelDescriptorIssues();
 
         if (issue == ChannelDescriptorIssue.NONE) {
-            return DummyChannelDescriptor.instance();
+            return TinkerforgeChannelDescriptor.instance();
         } else if (issue == ChannelDescriptorIssue.THROW) {
             throw new IllegalArgumentException();
         } else if (issue == ChannelDescriptorIssue.RETURN_INVALID_OBJECT) {
@@ -268,7 +268,7 @@ public class DummyDriver implements Driver, ConfigurableComponent {
             this.channelName = (String) channelConfig.get(CHANNEL_NAME_PROPERTY_KEY);
             final DataType valueType = DataType.valueOf((String) channelConfig.get(CHANNEL_VALUE_TYPE_PROPERY_KEY));
             this.valueFromConfig = DataTypeHelper.parseTypedValue(valueType,
-                    DummyChannelDescriptor.getValue(channelConfig));
+                    TinkerforgeChannelDescriptor.getValue(channelConfig));
         }
     }
 

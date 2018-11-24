@@ -7,11 +7,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.wire.devel.driver.dummy;
+package org.eclipse.kura.wire.tinkerforge.driver.tinkerforge;
 
-public enum ChannelDescriptorIssue {
+public enum PreparedReadIssue {
     NONE,
     THROW,
     RETURN_NULL,
-    RETURN_INVALID_OBJECT
 }

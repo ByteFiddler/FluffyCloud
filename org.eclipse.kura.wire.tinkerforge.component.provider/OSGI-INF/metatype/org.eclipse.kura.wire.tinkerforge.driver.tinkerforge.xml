@@ -9,9 +9,9 @@
 
 -->
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="en_us">
-    <OCD id="org.eclipse.kura.wire.devel.driver.dummy" 
-         name="DummyDriver" 
-         description="A dummy driver">
+    <OCD id="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge" 
+         name="TinkerforgeDriver" 
+         description="A tinkerforge driver">
          
         <AD id="connection.delay"
             name="connection delay"
@@ -59,7 +59,7 @@
          </AD>
     
     </OCD>
-    <Designate pid="org.eclipse.kura.wire.devel.driver.dummy" factoryPid="org.eclipse.kura.wire.devel.driver.dummy">
-        <Object ocdref="org.eclipse.kura.wire.devel.driver.dummy"/>
+    <Designate pid="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge" factoryPid="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge">
+        <Object ocdref="org.eclipse.kura.wire.tinkerforge.driver.tinkerforge"/>
     </Designate>
 </MetaData>
