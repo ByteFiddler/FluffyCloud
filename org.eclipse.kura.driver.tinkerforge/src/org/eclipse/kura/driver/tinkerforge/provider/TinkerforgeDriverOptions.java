@@ -11,11 +11,14 @@ package org.eclipse.kura.driver.tinkerforge.provider;
 
 import java.util.Map;
 
-import org.eclipse.kura.driver.tinkerforge.Property;
-
 public class TinkerforgeDriverOptions {
-	private static final Property<String> HOST = new Property<>("connection.host", "localhost");
-	private static final Property<Integer> PORT = new Property<>("connection.port", 4223);
+
+    protected static final String DEFAULT_CONNECTION_HOST = "localhost";
+    protected static final int DEFAULT_CONNECTION_PORT = 4223;
+
+    private static final String CONNECTION_HOST = "connection.host";
+    private static final String CONNECTION_PORT = "connection.port";
+    private static final String CONNECTION_UUID = "connection.uuid";
 
 	private final Map<String, Object> properties;
 
@@ -24,10 +27,14 @@ public class TinkerforgeDriverOptions {
 	}
 
 	public String getHost() {
-		return (String) properties.get(HOST);
+		return (String) properties.get(CONNECTION_HOST);
 	}
 
 	public int getPort() {
-		return (int) properties.get(PORT);
+		return (int) properties.get(CONNECTION_PORT);
+	}
+
+	public String getUuid() {
+		return (String) properties.get(CONNECTION_UUID);
 	}
 }

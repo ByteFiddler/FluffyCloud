@@ -36,14 +36,6 @@ public class ChannelListenerManager {
         this.driver = driver;
     }
 
-    public void start() {
-        this.executor.scheduleWithFixedDelay(this::simulateChannelEvents, 0, 1, TimeUnit.SECONDS);
-    }
-
-    public void shutdown() {
-        this.executor.shutdown();
-    }
-
     public void registerChannelListener(final Map<String, Object> channelConfig, final ChannelListener listener) {
         logger.debug("registering channel listener...");
         this.registeredListeners.add(new ChannelListenerRegistration(new BaseRequest(channelConfig), listener));
@@ -57,29 +49,6 @@ public class ChannelListenerManager {
             logger.debug("listener not found");
         }
         logger.debug("unregistering channel listener...done");
-    }
-
-    private void simulateChannelEvents() {
-
-        if (!this.driver.isConnected()) {
-            return;
-        }
-
-        for (final ChannelListenerRegistration reg : this.registeredListeners) {
-
-            try {
-                final TypedValue<?> value = this.driver.readInternal(reg.request);
-
-                final ChannelRecord record = ChannelRecord.createReadRecord(reg.request.channelName, value.getType());
-                record.setValue(value);
-                record.setChannelStatus(TinkerforgeDriver.SUCCESS);
-                record.setTimestamp(System.currentTimeMillis());
-
-                reg.listener.onChannelEvent(new ChannelEvent(record));
-            } catch (Exception e) {
-                logger.debug("Error dispatching channel event", e);
-            }
-        }
     }
 
     private static final class ChannelListenerRegistration {

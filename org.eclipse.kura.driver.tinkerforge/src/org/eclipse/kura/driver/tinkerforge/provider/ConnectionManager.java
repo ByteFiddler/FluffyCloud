@@ -35,6 +35,10 @@ public final class ConnectionManager {
 	private Future<?> connectionAttempt = CompletableFuture.completedFuture(null);
 	private TinkerforgeDriverOptions options;
 	private final IPConnection ipConnection = new IPConnection();
+	
+	protected ConnectionManager() {
+		super();
+	}
 
 	protected Future<?> connectAsync() {
 		synchronized (this) {

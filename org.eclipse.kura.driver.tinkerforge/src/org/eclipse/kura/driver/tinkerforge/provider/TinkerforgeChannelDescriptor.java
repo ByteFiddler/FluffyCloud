@@ -1,56 +1,38 @@
-/*******************************************************************************
- * Copyright (c) 2018 Eurotech and/or its affiliates and others
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- *******************************************************************************/
 package org.eclipse.kura.driver.tinkerforge.provider;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import org.eclipse.kura.configuration.metatype.Option;
 import org.eclipse.kura.core.configuration.metatype.Tad;
-import org.eclipse.kura.core.configuration.metatype.Tscalar;
+import org.eclipse.kura.core.configuration.metatype.Toption;
 import org.eclipse.kura.driver.ChannelDescriptor;
-import org.eclipse.kura.driver.tinkerforge.Property;
 
-public final class TinkerforgeChannelDescriptor implements ChannelDescriptor {
-
-    private static final Property<String> VALUE = new Property<>("value", "0");
-    private static final TinkerforgeChannelDescriptor INSTANCE = new TinkerforgeChannelDescriptor();
+public abstract class TinkerforgeChannelDescriptor implements ChannelDescriptor {
 
     private final List<Tad> ads;
 
-    private TinkerforgeChannelDescriptor() {
-        this.ads = initAttributes();
+    protected TinkerforgeChannelDescriptor(final List<Tad> ads) {
+        this.ads = ads;
     }
 
-    private static List<Tad> initAttributes() {
-        final Tad value = new Tad();
-        value.setName(VALUE.getKey());
-        value.setId(VALUE.getKey());
-        value.setDescription("The value to be emitted for this channel");
-        value.setType(Tscalar.STRING);
-        value.setRequired(true);
-        value.setDefault(VALUE.getDefaultValue());
-
-        return Collections.singletonList(value);
+    protected static void addOptions(Tad target, Enum<?>[] values, String defaultValue) {
+        final List<Option> options = target.getOption();
+        for (Enum<?> value : values) {
+            Toption option = new Toption();
+            option.setLabel(value.name());
+            option.setValue(value.name());
+            options.add(option);
+        }
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            Toption option = new Toption();
+            option.setLabel(defaultValue);
+            option.setValue(defaultValue);
+            options.add(option);
+        }
     }
 
-    public static TinkerforgeChannelDescriptor instance() {
-        return INSTANCE;
-    }
-
-    public static String getValue(final Map<String, Object> channelConfig) {
-        return VALUE.get(channelConfig);
-    }
-
-    @Override
-    public Object getDescriptor() {
-        return ads;
-    }
+	@Override
+	public final Object getDescriptor() {
+		return ads;
+	}
 }
