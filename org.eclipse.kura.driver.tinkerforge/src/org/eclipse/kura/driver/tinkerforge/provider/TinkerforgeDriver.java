@@ -14,7 +14,6 @@ import static org.eclipse.kura.channel.ChannelFlag.FAILURE;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,18 +26,13 @@ import org.eclipse.kura.configuration.ConfigurableComponent;
 import org.eclipse.kura.driver.ChannelDescriptor;
 import org.eclipse.kura.driver.Driver;
 import org.eclipse.kura.driver.PreparedRead;
-import org.eclipse.kura.driver.tinkerforge.DataTypeHelper;
-import org.eclipse.kura.driver.tinkerforge.provider.bricklets.RGBLEDChannelDescriptor;
 import org.eclipse.kura.type.DataType;
 import org.eclipse.kura.type.TypedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tinkerforge.AlreadyConnectedException;
-import com.tinkerforge.BrickletRGBLED;
 import com.tinkerforge.Device;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NetworkException;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -49,8 +43,7 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 
 	protected static final Logger logger = LoggerFactory.getLogger(TinkerforgeDriver.class);
 
-	private final Map<String, TypedValue<?>> values = new HashMap<>();
-	private final ChannelListenerManager channelListenerManager = new ChannelListenerManager(this);
+	private final ChannelListenerManager channelListenerManager = new ChannelListenerManager();
 	private final ConnectionManager connectionManager = new ConnectionManager();
 
 	private TinkerforgeDriverOptions options;
@@ -63,7 +56,7 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 		this.tcdClass = tcdClass;
 	}
 
-	protected final D getInstanceOfDevice() {
+	protected final D getDevice() {
 		try {
 			return dClass.getDeclaredConstructor(String.class, IPConnection.class).newInstance(options.getUuid(),
 					connectionManager.getIpConnection());
@@ -82,7 +75,11 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 		}
 	}
 
-	protected abstract void writeValues(final List<ChannelRecord> records) throws TimeoutException, NotConnectedException;
+	protected abstract void readValues(final List<ChannelRecord> records)
+			throws TimeoutException, NotConnectedException;
+
+	protected abstract void writeValues(final List<ChannelRecord> records)
+			throws TimeoutException, NotConnectedException;
 
 	public final void activate(Map<String, Object> properties) {
 		logger.info("activating...");
@@ -103,7 +100,6 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 	public final void updated(Map<String, Object> properties) {
 		logger.info("updating..");
 
-		values.clear();
 		this.options = new TinkerforgeDriverOptions(properties);
 
 		this.connectionManager.setOptions(options);
@@ -141,45 +137,38 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 	}
 
 	@Override
-	public final void read(List<ChannelRecord> records) throws ConnectionException {
+	public final synchronized void read(final List<ChannelRecord> records) throws ConnectionException {
 		logger.debug("reading...");
 
 		// read() should trigger a connect()
 		connect();
 
-		for (final ChannelRecord record : records) {
-			try {
-				logger.debug("channel name: {}", record.getChannelName());
-				logger.debug("channel config: {}", record.getChannelConfig());
-
-				record.setValue(readInternal(new ReadRequest(record)));
-				record.setChannelStatus(SUCCESS);
-			} catch (Exception e) {
-				record.setChannelStatus(new ChannelStatus(FAILURE, "failed to read channel", e));
-			} finally {
-				record.setTimestamp(System.currentTimeMillis());
-			}
+		// read new values
+		try {
+			readValues(records);
+			// record success
+			records.forEach(record -> record.setChannelStatus(SUCCESS));
+		} catch (TimeoutException | NotConnectedException e) {
+			// record failure
+			final ChannelStatus status = new ChannelStatus(FAILURE, "failed to read channel", e);
+			records.forEach(record -> record.setChannelStatus(status));
+		} finally {
+			final long timestamp = System.currentTimeMillis();
+			records.forEach(record -> record.setTimestamp(timestamp));
 		}
 
 		logger.debug("reading...done");
 	}
 
 	@Override
-	public final void write(final List<ChannelRecord> records) throws ConnectionException {
+	public final synchronized void write(final List<ChannelRecord> records) throws ConnectionException {
 		logger.debug("writing...");
 
 		// write() should trigger a connect()
 		connect();
 
-		// get values
-		final Map<String, TypedValue<?>> values = new HashMap<>();
-		for (final ChannelRecord record : records) {
-			final String channelName = record.getChannelName();
-			final TypedValue<?> value = requireNonNull(record.getValue(), "supplied value cannot be null");
-			logger.debug("channel name: {}", channelName);
-			logger.debug("value: {}", value);
-			values.put(channelName, record.getValue());
-		}
+		// fix null
+		records.forEach(record -> record.setValue(requireNonNull(record.getValue(), "supplied value cannot be null")));
 
 		// write values
 		try {
@@ -199,23 +188,11 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 	}
 
 	@Override
-	public final PreparedRead prepareRead(final List<ChannelRecord> records) {
+	public final synchronized PreparedRead prepareRead(final List<ChannelRecord> records) {
 		return new PreparedReadImpl(records);
 	}
 
-	protected final TypedValue<?> readInternal(final BaseRequest request) {
-
-		final TypedValue<?> writtenValue = this.values.get(request.channelName);
-
-		if (writtenValue == null) {
-			return request.valueFromConfig;
-		} else if (writtenValue.getType() == request.valueFromConfig.getType()) {
-			return writtenValue;
-		}
-
-		throw new IllegalArgumentException("Channel " + request.channelName
-				+ " has been previously written but type does not match type in request");
-	}
+	protected abstract TypedValue<?> readValue(final ChannelRecord record) throws TimeoutException, NotConnectedException;
 
 	private class PreparedReadImpl implements PreparedRead {
 
@@ -254,7 +231,7 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 
 			for (final ReadRequest request : validRequests) {
 				try {
-					request.record.setValue(readInternal(request));
+					request.record.setValue(readValue(request.record));
 					request.record.setChannelStatus(SUCCESS);
 				} catch (Exception e) {
 					request.record.setChannelStatus(new ChannelStatus(ChannelFlag.FAILURE, e.getMessage(), e));
@@ -275,32 +252,33 @@ public abstract class TinkerforgeDriver<D extends Device, TCD extends Tinkerforg
 
 	static class BaseRequest {
 
-		// these parameters can be retrieved from a ChannelRecord in a more convenient
-		// way using the getChannelName() and getValueType() methods, however, when
-		// a ChannelListener is registered a raw map is passed as argument
-		private static final String CHANNEL_NAME_PROPERTY_KEY = "+name";
-		private static final String CHANNEL_VALUE_TYPE_PROPERY_KEY = "+value.type";
+        // these parameters can be retrieved from a ChannelRecord in a more convenient
+        // way using the getChannelName() and getValueType() methods, however, when
+        // a ChannelListener is registered a raw map is passed as argument
+        private static final String CHANNEL_NAME_PROPERTY_KEY = "+name";
+        private static final String CHANNEL_VALUE_TYPE_PROPERY_KEY = "+value.type";
 
-		final String channelName;
-		final TypedValue<?> valueFromConfig;
+        final String channelName;
+        final Map<String, Object> channelConfig;
+        final DataType valueType;
 
-		public BaseRequest(final Map<String, Object> channelConfig) {
-			this.channelName = (String) channelConfig.get(CHANNEL_NAME_PROPERTY_KEY);
-			// final DataType valueType = DataType.valueOf((String)
-			// channelConfig.get(CHANNEL_VALUE_TYPE_PROPERY_KEY));
-			final DataType valueType = DataType.valueOf((String) channelConfig.get(CHANNEL_VALUE_TYPE_PROPERY_KEY));
-			this.valueFromConfig = DataTypeHelper.parseTypedValue(valueType,
-					RGBLEDChannelDescriptor.getColor(channelConfig).toString());
+        public BaseRequest(final Map<String, Object> channelConfig) {
+            this.channelName = (String) channelConfig.get(CHANNEL_NAME_PROPERTY_KEY);
+            this.channelConfig = channelConfig;
+            this.valueType = DataType.valueOf((String) channelConfig.get(CHANNEL_VALUE_TYPE_PROPERY_KEY));
+        }
+    }
+
+	static final class ReadRequest extends BaseRequest {
+
+		private final ChannelRecord record;
+
+		public ChannelRecord getRecord() {
+			return record;
 		}
-	}
-
-	protected static final class ReadRequest extends BaseRequest {
-
-		final ChannelRecord record;
 
 		public ReadRequest(final ChannelRecord record) {
-			super(record.getChannelConfig());
-
+            super(record.getChannelConfig());
 			this.record = record;
 		}
 	}

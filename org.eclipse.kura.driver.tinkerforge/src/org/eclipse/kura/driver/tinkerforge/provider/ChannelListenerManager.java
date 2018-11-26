@@ -12,15 +12,9 @@ package org.eclipse.kura.driver.tinkerforge.provider;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import org.eclipse.kura.channel.ChannelRecord;
-import org.eclipse.kura.channel.listener.ChannelEvent;
 import org.eclipse.kura.channel.listener.ChannelListener;
 import org.eclipse.kura.driver.tinkerforge.provider.TinkerforgeDriver.BaseRequest;
-import org.eclipse.kura.type.TypedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +22,7 @@ public class ChannelListenerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelListenerManager.class);
 
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChannelListenerRegistration> registeredListeners = new CopyOnWriteArraySet<>();
-    private final TinkerforgeDriver driver;
-
-    public ChannelListenerManager(final TinkerforgeDriver driver) {
-        this.driver = driver;
-    }
 
     public void registerChannelListener(final Map<String, Object> channelConfig, final ChannelListener listener) {
         logger.debug("registering channel listener...");
