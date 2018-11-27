@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.driver.tinkerforge.provider.bricklets;
+package org.eclipse.kura.driver.tinkerforge.provider.bricklet;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.Map;
 
 import org.eclipse.kura.core.configuration.metatype.Tad;
 import org.eclipse.kura.core.configuration.metatype.Tscalar;
-import org.eclipse.kura.driver.tinkerforge.provider.TinkerforgeChannelDescriptor;
+import org.eclipse.kura.driver.tinkerforge.provider.EmptyChannelDescriptor;
 
-public final class RGBLEDChannelDescriptor extends TinkerforgeChannelDescriptor{
+public final class RGBLEDChannelDescriptor extends EmptyChannelDescriptor{
 
     protected static final String DEFAULT_RESOURCE_COLOR = "#select color";
     private static final String RESOURCE_COLOR = "resource.color";

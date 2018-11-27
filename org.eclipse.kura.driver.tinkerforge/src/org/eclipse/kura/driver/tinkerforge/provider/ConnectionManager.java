@@ -23,6 +23,7 @@ import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NetworkException;
 import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
 
 public final class ConnectionManager {
 
@@ -33,14 +34,17 @@ public final class ConnectionManager {
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private Future<?> connectionAttempt = CompletableFuture.completedFuture(null);
-	private TinkerforgeDriverOptions options;
+	private DriverOptions options;
 	private final IPConnection ipConnection = new IPConnection();
 	
-	protected ConnectionManager() {
+	private ChannelListenerManager channelListenerManager;
+	
+	ConnectionManager(ChannelListenerManager channelListenerManager) {
 		super();
+		this.channelListenerManager = channelListenerManager;
 	}
 
-	protected Future<?> connectAsync() {
+	Future<?> connectAsync() {
 		synchronized (this) {
 			if (isConnecting()) {
 				return connectionAttempt;
@@ -57,7 +61,7 @@ public final class ConnectionManager {
 		}
 	}
 
-	protected Future<?> disconnectAsync() {
+	Future<?> disconnectAsync() {
 		return this.executor.submit(() -> {
 			if (isShuttingDown.get()) {
 				return;
@@ -66,7 +70,7 @@ public final class ConnectionManager {
 		});
 	}
 
-	protected synchronized void reconnectAsync() {
+	synchronized void reconnectAsync() {
 		if (isConnected() || isConnecting()) {
 			this.executor.submit(() -> {
 				disconnectInternal();
@@ -75,7 +79,7 @@ public final class ConnectionManager {
 		}
 	}
 
-	protected void connectSync() throws ConnectionException {
+	void connectSync() throws ConnectionException {
 		try {
 			connectAsync().get();
 		} catch (final Exception e) {
@@ -83,7 +87,7 @@ public final class ConnectionManager {
 		}
 	}
 
-	protected void disconnectSync() throws ConnectionException {
+	void disconnectSync() throws ConnectionException {
 		try {
 			this.disconnectAsync().get();
 		} catch (final Exception e) {
@@ -101,6 +105,13 @@ public final class ConnectionManager {
 		try {
 			ipConnection.connect(this.options.getHost(), this.options.getPort());
 		} catch (NetworkException | AlreadyConnectedException e) {
+			throw new ConnectionException(e);
+		}
+		
+		logger.info("activating listeners...");
+		try {
+			channelListenerManager.activateChannelListeners();
+		} catch (TimeoutException | NotConnectedException e) {
 			throw new ConnectionException(e);
 		}
 
@@ -126,19 +137,19 @@ public final class ConnectionManager {
 		logger.info("disconnecting...done");
 	}
 
-	protected boolean isConnected() {
+	boolean isConnected() {
 		return isConnected.get();
 	}
 
-	protected boolean isConnecting() {
+	boolean isConnecting() {
 		return !this.connectionAttempt.isDone();
 	}
 
-	protected void setOptions(final TinkerforgeDriverOptions options) {
+	void setOptions(final DriverOptions options) {
 		this.options = options;
 	}
 
-	protected void shutdown() {
+	void shutdown() {
 		isShuttingDown.set(true);
 		try {
 			this.executor.submit(this::disconnectInternal).get();
@@ -148,7 +159,25 @@ public final class ConnectionManager {
 		this.executor.shutdown();
 	}
 
-	protected IPConnection getIpConnection() {
-		return ipConnection;
+	ConnectInfo getConnectInfo() {
+		return new ConnectInfo(options.getUuid(), ipConnection);
+	}
+
+	public static final class ConnectInfo  {
+		final String uuid;
+		final IPConnection ipConnection;
+		
+		private ConnectInfo(final String uuid,	final IPConnection ipConnection) {
+			this.uuid = uuid;
+			this.ipConnection = ipConnection;
+		}
+
+		public String getUuid() {
+			return uuid;
+		}
+
+		public IPConnection getIpConnection() {
+			return ipConnection;
+		}
 	}
 }

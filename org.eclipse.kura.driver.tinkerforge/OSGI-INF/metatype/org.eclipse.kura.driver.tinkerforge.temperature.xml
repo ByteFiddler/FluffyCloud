@@ -9,9 +9,9 @@
 
 -->
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="en_us">
-    <OCD id="org.eclipse.kura.driver.tinkerforge.rgbled" 
-         name="RGBLEDDriver" 
-         description="A tinkerforge driver for the RGBLED bricklet">
+    <OCD id="org.eclipse.kura.driver.tinkerforge.temperature" 
+         name="TemperatureDriver" 
+         description="A tinkerforge driver for the temperature bricklet">
          
          <AD id="connection.host"
             name="connection.host"
@@ -40,7 +40,7 @@
          </AD>
     
     </OCD>
-    <Designate pid="org.eclipse.kura.driver.tinkerforge.rgbled" factoryPid="org.eclipse.kura.driver.tinkerforge.rgbled">
-        <Object ocdref="org.eclipse.kura.driver.tinkerforge.rgbled"/>
+    <Designate pid="org.eclipse.kura.driver.tinkerforge.temperature" factoryPid="org.eclipse.kura.driver.tinkerforge.temperature">
+        <Object ocdref="org.eclipse.kura.driver.tinkerforge.temperature"/>
     </Designate>
 </MetaData>

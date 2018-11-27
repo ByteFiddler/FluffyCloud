@@ -14,70 +14,97 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.kura.channel.listener.ChannelListener;
-import org.eclipse.kura.driver.tinkerforge.provider.TinkerforgeDriver.BaseRequest;
+import org.eclipse.kura.driver.Driver.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tinkerforge.DeviceListener;
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
+
 public class ChannelListenerManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChannelListenerManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(ChannelListenerManager.class);
 
-    private final Set<ChannelListenerRegistration> registeredListeners = new CopyOnWriteArraySet<>();
+	private final Set<ChannelListenerRegistration> registeredListeners = new CopyOnWriteArraySet<>();
+	final AbstractDriver driver;
 
-    public void registerChannelListener(final Map<String, Object> channelConfig, final ChannelListener listener) {
-        logger.debug("registering channel listener...");
-        this.registeredListeners.add(new ChannelListenerRegistration(new BaseRequest(channelConfig), listener));
-        logger.debug("registering channel listener...done");
-    }
+	ChannelListenerManager(final AbstractDriver driver) {
+		this.driver = driver;
+	}
 
-    public void unregisterChannelListener(final ChannelListener listener) {
-        logger.debug("unregistering channel listener...");
-        final boolean removed = this.registeredListeners.removeIf(reg -> reg.listener == listener);
-        if (!removed) {
-            logger.debug("listener not found");
-        }
-        logger.debug("unregistering channel listener...done");
-    }
+	void registerChannelListener(final Map<String, Object> channelConfig, final ChannelListener listener)
+			throws ConnectionException {
+		logger.debug("registering channel channelListener...");
+		this.registeredListeners.add(new ChannelListenerRegistration(channelConfig, listener));
+		logger.debug("registering channel channelListener...done");
+	}
 
-    private static final class ChannelListenerRegistration {
+	void unregisterChannelListener(final ChannelListener listener) {
+		logger.debug("unregistering channel channelListener...");
+		boolean removed = false;
+		for (final ChannelListenerRegistration reg : registeredListeners) {
+			if (reg.channelListener == listener) {
+				driver.removeDeviceListener(driver.connectionManager.getConnectInfo(), reg.deviceListener);
+				removed = true;
+			}
+		}
+		if (!removed) {
+			logger.debug("channelListener not found");
+		}
+		logger.debug("unregistering channel channelListener...done");
+	}
 
-        private final BaseRequest request;
-        private final ChannelListener listener;
+	void activateChannelListeners() throws TimeoutException, NotConnectedException {
+		for (final ChannelListenerRegistration reg : registeredListeners) {
+			driver.registerDeviceListener(driver.connectionManager.getConnectInfo(), reg.deviceListener);
+		}
+	}
 
-        public ChannelListenerRegistration(final BaseRequest request, final ChannelListener listener) {
-            this.request = request;
-            this.listener = listener;
-        }
+	private class ChannelListenerRegistration {
 
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((request.channelName == null) ? 0 : request.channelName.hashCode());
-            result = prime * result + ((listener == null) ? 0 : listener.hashCode());
-            return result;
-        }
+		private static final String CHANNEL_NAME_PROPERTY_KEY = "+name";
 
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            ChannelListenerRegistration other = (ChannelListenerRegistration) obj;
-            if (request.channelName == null) {
-                if (other.request.channelName != null)
-                    return false;
-            } else if (!request.channelName.equals(other.request.channelName))
-                return false;
-            if (listener == null) {
-                if (other.listener != null)
-                    return false;
-            } else if (!listener.equals(other.listener))
-                return false;
-            return true;
-        }
-    }
+		private final String channelName;
+		private final ChannelListener channelListener;
+		private final DeviceListener deviceListener;
+
+		public ChannelListenerRegistration(final Map<String, Object> channelConfig,
+				final ChannelListener channelListener) {
+			this.channelName = (String) channelConfig.get(CHANNEL_NAME_PROPERTY_KEY);
+			this.channelListener = channelListener;
+			this.deviceListener = driver.createDeviceListener(channelName, channelListener);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((channelName == null) ? 0 : channelName.hashCode());
+			result = prime * result + ((channelListener == null) ? 0 : channelListener.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ChannelListenerRegistration other = (ChannelListenerRegistration) obj;
+			if (channelName == null) {
+				if (other.channelName != null)
+					return false;
+			} else if (!channelName.equals(other.channelName))
+				return false;
+			if (channelListener == null) {
+				if (other.channelListener != null)
+					return false;
+			} else if (!channelListener.equals(other.channelListener))
+				return false;
+			return true;
+		}
+	}
 }
