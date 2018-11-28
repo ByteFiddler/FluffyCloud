@@ -44,7 +44,7 @@
 		 <AD id="temperature.threshold.option"
 			name="temperature.threshold.option"
 			type="Char"
-			description="x=off, o=outside, i=inside, &lt;=smaller min, &gt;=greater max">
+			description="Trigger when: x=off, o=not outside range, i=not in range, &lt;=smaller min, &gt;=greater min">
 		 </AD>
 		 
 		<AD id="temperature.threshold.min"
