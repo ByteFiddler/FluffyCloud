@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.kura.driver.Driver.ConnectionException;
+import org.eclipse.kura.driver.tinkerforge.provider.options.DeviceOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public final class ConnectionManager {
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private Future<?> connectionAttempt = CompletableFuture.completedFuture(null);
-	private DriverOptions options;
+	private DeviceOptions options;
 	private final IPConnection ipConnection = new IPConnection();
 
 	private ChannelListenerManager channelListenerManager;
@@ -152,7 +153,7 @@ public final class ConnectionManager {
 		return !this.connectionAttempt.isDone();
 	}
 
-	void setOptions(final DriverOptions options) {
+	void setOptions(final DeviceOptions options) {
 		this.options = options;
 	}
 

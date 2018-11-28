@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  *******************************************************************************/
-package org.eclipse.kura.driver.tinkerforge.provider.bricklet;
+package org.eclipse.kura.driver.tinkerforge.provider.device.bricklet;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.eclipse.kura.driver.tinkerforge.provider.bricklet;
+package org.eclipse.kura.driver.tinkerforge.provider.device.bricklet;
 
 import java.util.List;
 

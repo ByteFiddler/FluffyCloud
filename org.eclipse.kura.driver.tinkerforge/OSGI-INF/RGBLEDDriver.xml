@@ -15,7 +15,7 @@
 				modified="modified"
 				enabled="true" 
 				configuration-policy="require"> 
-	<implementation class="org.eclipse.kura.driver.tinkerforge.provider.bricklet.RGBLEDDriver"/>
+	<implementation class="org.eclipse.kura.driver.tinkerforge.provider.device.bricklet.RGBLEDDriver"/>
 	<property name="service.pid" value="org.eclipse.kura.driver.tinkerforge.rgbled"/>
 	<service>
 		<provide interface="org.eclipse.kura.driver.Driver"/>
