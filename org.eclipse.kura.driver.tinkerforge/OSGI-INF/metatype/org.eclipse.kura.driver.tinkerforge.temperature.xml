@@ -16,8 +16,6 @@
 		 <AD id="connection.host"
 			name="connection.host"
 			type="String"
-			cardinality="0"
-			required="true"
 			default="localhost"
 			description="Host to connect to over TCP/IP">
 		 </AD>
@@ -25,8 +23,6 @@
 		<AD id="connection.port"
 			name="connection port"
 			type="Integer"
-			cardinality="0"
-			required="true"
 			default="4223"
 			description="Port to connect to over TCP/IP">
 		 </AD>
@@ -34,8 +30,6 @@
 		 <AD id="connection.uuid"
 			name="connection.uuid"
 			type="String"
-			cardinality="0"
-			required="true"
 			description="UUID of Brick/Bricklet">
 		 </AD>
 	
