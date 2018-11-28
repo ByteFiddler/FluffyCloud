@@ -152,6 +152,10 @@ public final class ConnectionManager {
 	boolean isConnecting() {
 		return !this.connectionAttempt.isDone();
 	}
+	
+	public DeviceOptions getOptions() {
+		return options;
+	}
 
 	void setOptions(final DeviceOptions options) {
 		this.options = options;

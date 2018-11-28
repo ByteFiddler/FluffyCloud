@@ -7,7 +7,7 @@ public class ConnectionOptions {
 	private static final String CONNECTION_HOST = "connection.host";
 	private static final String CONNECTION_PORT = "connection.port";
 
-	final Map<String, Object> properties;
+	protected final Map<String, Object> properties;
 
 	public ConnectionOptions(final Map<String, Object> properties) {
 		this.properties = properties;

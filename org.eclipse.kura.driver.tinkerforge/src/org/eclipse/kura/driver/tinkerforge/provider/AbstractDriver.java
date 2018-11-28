@@ -3,6 +3,7 @@ package org.eclipse.kura.driver.tinkerforge.provider;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.kura.channel.ChannelFlag.FAILURE;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,10 @@ public abstract class AbstractDriver implements TinkerforgeDriver {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractDriver.class);
 
 	private final ChannelListenerManager channelListenerManager = new ChannelListenerManager(this);
-	final ConnectionManager connectionManager = new ConnectionManager(channelListenerManager);
+	
+	protected final ConnectionManager connectionManager = new ConnectionManager(channelListenerManager);
+	
+	private final Class<? extends DeviceOptions> optionsClass;
 
 	protected abstract TypedValue<?> readValue(final ConnectInfo info, final ChannelRecord record)
 			throws TimeoutException, NotConnectedException;
@@ -48,6 +52,16 @@ public abstract class AbstractDriver implements TinkerforgeDriver {
 	
 	protected abstract void removeDeviceListener(final ConnectInfo info, final DeviceListener deviceListener);
 
+	protected AbstractDriver() {
+		super();
+		this.optionsClass = DeviceOptions.class;
+	}
+
+	protected AbstractDriver(Class<? extends DeviceOptions> optionsClass) {
+		super();
+		this.optionsClass = optionsClass;
+	}
+	
 	@Override
 	public final void activate(final Map<String, Object> properties) {
 		modified(properties);
@@ -60,8 +74,14 @@ public abstract class AbstractDriver implements TinkerforgeDriver {
 
 	@Override
 	public final void modified(final Map<String, Object> properties) {
-		connectionManager.setOptions(new DeviceOptions(properties));
-		connectionManager.reconnectAsync();
+		try {
+			DeviceOptions options = optionsClass.getDeclaredConstructor(Map.class).newInstance(properties);
+			connectionManager.setOptions(options);
+			connectionManager.reconnectAsync();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			logger.error("instantiation of device options failed", e);
+		}
 	}
 	
 	@Override

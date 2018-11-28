@@ -32,6 +32,14 @@
 			type="String"
 			description="UUID of Brick/Bricklet">
 		 </AD>
+		 
+		<AD id="temperature.callback.period"
+			name="temperature.callback.period"
+			type="Integer"
+			default="1000"
+			min="1"
+			description="Period in ms with which the listener is triggered periodically. Listener is only triggered if the temperature has changed.">
+		 </AD>
 	
 	</OCD>
 	<Designate pid="org.eclipse.kura.driver.tinkerforge.temperature" factoryPid="org.eclipse.kura.driver.tinkerforge.temperature">

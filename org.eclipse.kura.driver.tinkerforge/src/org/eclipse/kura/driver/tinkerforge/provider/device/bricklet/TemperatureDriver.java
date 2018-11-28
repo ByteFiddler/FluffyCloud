@@ -1,9 +1,10 @@
 package org.eclipse.kura.driver.tinkerforge.provider.device.bricklet;
 
+import static org.eclipse.kura.channel.ChannelFlag.SUCCESS;
+
 import java.util.List;
 
 import org.eclipse.kura.channel.ChannelRecord;
-import static org.eclipse.kura.channel.ChannelFlag.SUCCESS;
 import org.eclipse.kura.channel.ChannelStatus;
 import org.eclipse.kura.channel.listener.ChannelEvent;
 import org.eclipse.kura.channel.listener.ChannelListener;
@@ -23,6 +24,10 @@ import com.tinkerforge.TimeoutException;
 public class TemperatureDriver extends AbstractDriver {
 
 	private static final Logger logger = LoggerFactory.getLogger(TemperatureDriver.class);
+	
+	public TemperatureDriver() {
+		super(TemperatureOptions.class);
+	}
 
 	@Override
 	protected TypedValue<?> readValue(ConnectInfo info, ChannelRecord record)
@@ -65,7 +70,8 @@ public class TemperatureDriver extends AbstractDriver {
 	protected void registerDeviceListener(final ConnectInfo info, final DeviceListener deviceListener) throws TimeoutException, NotConnectedException {
 		final BrickletTemperature device = getDevice(info);
 		device.addTemperatureListener((BrickletTemperature.TemperatureListener) deviceListener);
-		device.setTemperatureCallbackPeriod(1000);
+		TemperatureOptions options = (TemperatureOptions) connectionManager.getOptions();
+		device.setTemperatureCallbackPeriod(options.getCallbackPeriod());
 	}
 
 	@Override
