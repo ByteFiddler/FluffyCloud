@@ -41,7 +41,7 @@ public class TemperatureThresholdDriver extends TemperatureDriver {
 		final BrickletTemperature device = getDevice(info);
 		device.addTemperatureReachedListener((BrickletTemperature.TemperatureReachedListener) deviceListener);
 		TemperatureThresholdOptions options = (TemperatureThresholdOptions) connectionManager.getOptions();
-		device.setTemperatureCallbackThreshold(options.getThresholdOption(), options.getThresholdMin(), options.getThresholdMax());
+		device.setTemperatureCallbackThreshold(options.getThresholdOption().asChar(), options.getThresholdMin(), options.getThresholdMax());
 		device.setDebouncePeriod(options.getDebouncePeriod());
 	}
 
