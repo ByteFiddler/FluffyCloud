@@ -30,7 +30,6 @@ public final class ConnectionManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
-	private final AtomicBoolean isConnected = new AtomicBoolean();
 	private final AtomicBoolean isShuttingDown = new AtomicBoolean();
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -47,7 +46,7 @@ public final class ConnectionManager {
 
 	Future<?> connectAsync() {
 		synchronized (this) {
-			if (isConnecting()) {
+			if (ipConnection.getConnectionState() == IPConnection.CONNECTION_STATE_PENDING) {
 				return connectionAttempt;
 			}
 
@@ -72,7 +71,7 @@ public final class ConnectionManager {
 	}
 
 	synchronized void reconnectAsync() {
-		if (isConnected() || isConnecting()) {
+		if (ipConnection.getConnectionState() == IPConnection.CONNECTION_STATE_CONNECTED || ipConnection.getConnectionState() == IPConnection.CONNECTION_STATE_PENDING) {
 			this.executor.submit(() -> {
 				disconnectInternal();
 				connectAsync();
@@ -97,7 +96,7 @@ public final class ConnectionManager {
 	}
 
 	private void connectInternal() throws ConnectionException {
-		if (isConnected.get()) {
+		if (ipConnection.getConnectionState() == IPConnection.CONNECTION_STATE_CONNECTED) {
 			logger.debug("already connected");
 			return;
 		}
@@ -123,12 +122,11 @@ public final class ConnectionManager {
 			throw new ConnectionException(e);
 		}
 
-		isConnected.set(true);
 		logger.info("connecting...done");
 	}
 
 	private void disconnectInternal() {
-		if (!isConnected.get()) {
+		if (ipConnection.getConnectionState() == IPConnection.CONNECTION_STATE_DISCONNECTED) {
 			logger.debug("already disconnected");
 			return;
 		}
@@ -140,17 +138,7 @@ public final class ConnectionManager {
 			logger.warn("disconnection failed", e);
 		}
 
-		isConnected.set(false);
-
 		logger.info("disconnecting...done");
-	}
-
-	boolean isConnected() {
-		return isConnected.get();
-	}
-
-	boolean isConnecting() {
-		return !this.connectionAttempt.isDone();
 	}
 	
 	public DeviceOptions getOptions() {
