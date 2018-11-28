@@ -36,9 +36,9 @@ public final class ConnectionManager {
 	private Future<?> connectionAttempt = CompletableFuture.completedFuture(null);
 	private DriverOptions options;
 	private final IPConnection ipConnection = new IPConnection();
-	
+
 	private ChannelListenerManager channelListenerManager;
-	
+
 	ConnectionManager(ChannelListenerManager channelListenerManager) {
 		super();
 		this.channelListenerManager = channelListenerManager;
@@ -101,17 +101,24 @@ public final class ConnectionManager {
 			return;
 		}
 
+		logger.info("activating listeners...");
+		ipConnection.addConnectedListener(new IPConnection.ConnectedListener() {
+
+			@Override
+			public void connected(short connectReason) {
+				try {
+					channelListenerManager.activateChannelListeners();
+				} catch (TimeoutException | NotConnectedException e) {
+					logger.error("activating channel listeners failed...", e);
+				}
+			}
+
+		});
+
 		logger.info("connecting...");
 		try {
 			ipConnection.connect(this.options.getHost(), this.options.getPort());
 		} catch (NetworkException | AlreadyConnectedException e) {
-			throw new ConnectionException(e);
-		}
-		
-		logger.info("activating listeners...");
-		try {
-			channelListenerManager.activateChannelListeners();
-		} catch (TimeoutException | NotConnectedException e) {
 			throw new ConnectionException(e);
 		}
 
@@ -163,11 +170,11 @@ public final class ConnectionManager {
 		return new ConnectInfo(options.getUuid(), ipConnection);
 	}
 
-	public static final class ConnectInfo  {
+	public static final class ConnectInfo {
 		final String uuid;
 		final IPConnection ipConnection;
-		
-		private ConnectInfo(final String uuid,	final IPConnection ipConnection) {
+
+		private ConnectInfo(final String uuid, final IPConnection ipConnection) {
 			this.uuid = uuid;
 			this.ipConnection = ipConnection;
 		}
