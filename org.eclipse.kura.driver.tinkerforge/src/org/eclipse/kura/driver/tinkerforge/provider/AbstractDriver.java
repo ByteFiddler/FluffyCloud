@@ -109,7 +109,7 @@ public abstract class AbstractDriver implements TinkerforgeDriver {
 
 	@Override
 	public void unregisterChannelListener(final ChannelListener listener) throws ConnectionException {
-        this.channelListenerManager.unregisterChannelListener(listener);
+		this.channelListenerManager.unregisterChannelListener(listener);
 
 	}
 
