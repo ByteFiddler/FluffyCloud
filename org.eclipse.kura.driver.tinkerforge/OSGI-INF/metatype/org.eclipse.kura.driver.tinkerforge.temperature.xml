@@ -35,7 +35,7 @@
 		 
 		<AD id="temperature.callback.period"
 			name="temperature.callback.period"
-			type="Integer"
+			type="Long"
 			default="1000"
 			min="1"
 			description="Period in ms with which the listener is triggered periodically. Listener is only triggered if the temperature has changed.">

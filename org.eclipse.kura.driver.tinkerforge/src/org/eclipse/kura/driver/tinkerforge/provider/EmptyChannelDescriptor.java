@@ -20,7 +20,7 @@ public class EmptyChannelDescriptor implements ChannelDescriptor {
 		this.tads = tads;
 	}
 
-	protected static void addOptions(final Tad target, final Enum<?>[] values, final String defaultValue) {
+	protected static void addChannelOptions(final Tad target, final Enum<?>[] values, final String defaultValue) {
 		final List<Option> options = target.getOption();
 		for (final Enum<?> value : values) {
 			final Toption option = new Toption();

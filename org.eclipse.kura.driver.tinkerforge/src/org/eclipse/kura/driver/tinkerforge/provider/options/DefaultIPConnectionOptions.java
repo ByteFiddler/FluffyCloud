@@ -2,14 +2,14 @@ package org.eclipse.kura.driver.tinkerforge.provider.options;
 
 import java.util.Map;
 
-public class ConnectionOptions {
+public class DefaultIPConnectionOptions implements IPConnectionOptions {
 
 	private static final String CONNECTION_HOST = "connection.host";
 	private static final String CONNECTION_PORT = "connection.port";
 
 	protected final Map<String, Object> properties;
 
-	public ConnectionOptions(final Map<String, Object> properties) {
+	public DefaultIPConnectionOptions(final Map<String, Object> properties) {
 		this.properties = properties;
 	}
 
@@ -20,5 +20,4 @@ public class ConnectionOptions {
 	public int getPort() {
 		return (int) properties.get(CONNECTION_PORT);
 	}
-
 }

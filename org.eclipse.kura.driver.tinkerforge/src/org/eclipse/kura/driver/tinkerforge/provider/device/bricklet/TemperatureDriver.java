@@ -10,6 +10,7 @@ import org.eclipse.kura.channel.listener.ChannelEvent;
 import org.eclipse.kura.channel.listener.ChannelListener;
 import org.eclipse.kura.driver.tinkerforge.provider.AbstractDriver;
 import org.eclipse.kura.driver.tinkerforge.provider.ConnectionManager.ConnectInfo;
+import org.eclipse.kura.driver.tinkerforge.provider.options.DeviceOptions;
 import org.eclipse.kura.type.DataType;
 import org.eclipse.kura.type.TypedValue;
 import org.eclipse.kura.type.TypedValues;
@@ -27,6 +28,10 @@ public class TemperatureDriver extends AbstractDriver {
 	
 	public TemperatureDriver() {
 		super(TemperatureOptions.class);
+	}
+
+	protected TemperatureDriver(Class<? extends DeviceOptions> optionsClass) {
+		super(optionsClass);
 	}
 
 	@Override
@@ -80,7 +85,7 @@ public class TemperatureDriver extends AbstractDriver {
 		device.removeTemperatureListener((BrickletTemperature.TemperatureListener) deviceListener);
 	}
 
-	private static BrickletTemperature getDevice(final ConnectInfo info) {
+	protected static BrickletTemperature getDevice(final ConnectInfo info) {
 		return new BrickletTemperature(info.getUuid(), info.getIpConnection());
 	}
 }

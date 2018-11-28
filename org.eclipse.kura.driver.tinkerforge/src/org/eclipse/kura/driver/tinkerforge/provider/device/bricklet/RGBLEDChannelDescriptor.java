@@ -35,7 +35,7 @@ public final class RGBLEDChannelDescriptor extends EmptyChannelDescriptor{
 		resourceColor.setType(Tscalar.STRING);
 		resourceColor.setRequired(true);
 		resourceColor.setDefault(DEFAULT_RESOURCE_COLOR);
-		addOptions(resourceColor, RGBLEDColor.values(), DEFAULT_RESOURCE_COLOR);
+		addChannelOptions(resourceColor, RGBLEDColor.values(), DEFAULT_RESOURCE_COLOR);
 
 		return Collections.singletonList(resourceColor);
 	}

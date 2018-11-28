@@ -15,6 +15,7 @@ import org.eclipse.kura.channel.listener.ChannelListener;
 import org.eclipse.kura.driver.ChannelDescriptor;
 import org.eclipse.kura.driver.PreparedRead;
 import org.eclipse.kura.driver.tinkerforge.provider.ConnectionManager.ConnectInfo;
+import org.eclipse.kura.driver.tinkerforge.provider.options.DefaultDeviceOptions;
 import org.eclipse.kura.driver.tinkerforge.provider.options.DeviceOptions;
 import org.eclipse.kura.type.TypedValue;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public abstract class AbstractDriver implements TinkerforgeDriver {
 
 	protected AbstractDriver() {
 		super();
-		this.optionsClass = DeviceOptions.class;
+		this.optionsClass = DefaultDeviceOptions.class;
 	}
 
 	protected AbstractDriver(Class<? extends DeviceOptions> optionsClass) {
