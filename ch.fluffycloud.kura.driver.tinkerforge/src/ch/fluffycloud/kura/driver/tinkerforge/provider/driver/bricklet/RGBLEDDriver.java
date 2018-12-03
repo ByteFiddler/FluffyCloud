@@ -12,14 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import com.tinkerforge.BrickletRGBLED;
 import com.tinkerforge.BrickletRGBLED.RGBValue;
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeListener;
 
 import ch.fluffycloud.kura.driver.tinkerforge.provider.AbstractDriver;
 import ch.fluffycloud.kura.driver.tinkerforge.provider.manager.channel.ChannelOptions;
 import ch.fluffycloud.kura.driver.tinkerforge.provider.manager.connection.DeviceOptions;
-
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-import com.tinkerforge.TinkerforgeListener;
 
 public class RGBLEDDriver extends AbstractDriver {
 
@@ -27,7 +26,7 @@ public class RGBLEDDriver extends AbstractDriver {
 
 	@Override
 	public ChannelDescriptor getChannelDescriptor() {
-		return new DualButtonChannelDescriptor();
+		return new RGBLEDChannelDescriptor();
 	}
 
 	private TypedValue<?> getValue(final ChannelRecord record, final RGBValue rgb) {
